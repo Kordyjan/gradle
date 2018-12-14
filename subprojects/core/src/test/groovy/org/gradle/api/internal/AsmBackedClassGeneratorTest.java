@@ -32,6 +32,7 @@ import org.gradle.api.reflect.HasPublicType;
 import org.gradle.api.reflect.TypeOf;
 import org.gradle.internal.metaobject.BeanDynamicObject;
 import org.gradle.internal.metaobject.DynamicObject;
+import org.gradle.internal.reflect.JavaReflectionUtil;
 import org.gradle.util.TestUtil;
 import org.junit.Test;
 import spock.lang.Issue;
@@ -85,7 +86,10 @@ public class AsmBackedClassGeneratorTest {
                 for (; i < args.length; i++) {
                     Object arg = args[i];
                     Class<?> parameterType = constructor.getParameterTypes()[i];
-                    if (!parameterType.isPrimitive() && !parameterType.isInstance(arg)) {
+                    if (parameterType.isPrimitive()) {
+                        parameterType = JavaReflectionUtil.getWrapperTypeForPrimitiveType(parameterType);
+                    }
+                    if (!parameterType.isInstance(arg)) {
                         break;
                     }
                 }
